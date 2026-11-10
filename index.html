@@ -1,183 +1,37 @@
 
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#101827">
-  <title>PayPulsa - Digital Exchange</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f6fa;
-      color: #172033;
+const PAYPULSA_API =
+  "https://paypulsa-api.shanowellexcel.workers.dev";
+
+async function buatPesanan() {
+  const hasil = document.getElementById("hasil");
+
+  hasil.innerText = "Menghubungkan ke PayPal Sandbox...";
+
+  try {
+    const res = await fetch(
+      `${PAYPULSA_API}/api/create-order`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({})
+      }
+    );
+
+    const data = await res.json();
+
+    if (!res.ok || !data.approval_url) {
+      throw new Error(
+        data.error || "Gagal membuat pesanan PayPal"
+      );
     }
-    header {
-      background: #101827;
-      color: white;
-      padding: 22px 18px;
-    }
-    .nav {
-      max-width: 900px;
-      margin: auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .logo { font-size: 25px; font-weight: bold; }
-    .logo span { color: #48c7a3; }
-    .hero {
-      background: #101827;
-      color: white;
-      padding: 45px 20px 65px;
-      text-align: center;
-    }
-    .hero h1 { font-size: 32px; margin: 5px 0 15px; }
-    .hero p { color: #cbd5e1; line-height: 1.6; }
-    .container {
-      max-width: 650px;
-      margin: -30px auto 40px;
-      padding: 0 16px;
-    }
-    .card {
-      background: white;
-      border-radius: 16px;
-      padding: 23px;
-      margin-bottom: 18px;
-      box-shadow: 0 5px 22px #0000000b;
-    }
-    .service {
-      border: 1px solid #e5eaf0;
-      border-radius: 12px;
-      padding: 16px;
-      margin-top: 12px;
-    }
-    .service h3 { margin: 0 0 7px; }
-    .service p { color: #64748b; font-size: 14px; }
-    label {
-      display: block;
-      font-size: 14px;
-      font-weight: bold;
-      margin: 16px 0 7px;
-    }
-    input, select {
-      width: 100%;
-      padding: 13px;
-      border: 1px solid #dce2ea;
-      border-radius: 9px;
-      font-size: 15px;
-      background: white;
-    }
-    button {
-      width: 100%;
-      padding: 15px;
-      margin-top: 20px;
-      background: #087e69;
-      color: white;
-      border: 0;
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: bold;
-    }
-    .note {
-      background: #eff6ff;
-      padding: 13px;
-      border-radius: 9px;
-      color: #315477;
-      font-size: 13px;
-      line-height: 1.5;
-    }
-    footer {
-      text-align: center;
-      padding: 25px;
-      color: #64748b;
-      font-size: 13px;
-    }
-  </style>
-</head>
-<body>
 
-<header>
-  <div class="nav">
-    <div class="logo">Pay<span>Pulsa</span></div>
-    <div>Digital Exchange</div>
-  </div>
-</header>
+    hasil.innerText = "Pesanan berhasil dibuat. Mengalihkan ke PayPal...";
 
-<section class="hero">
-  <h1>Transaksi Digital Lebih Mudah</h1>
-  <p>Layanan convert pulsa dan transaksi digital<br>
-  dengan proses yang transparan.</p>
-</section>
+    window.location.href = data.approval_url;
 
-<main class="container">
-  <section class="card">
-    <h2>Pilih Layanan</h2>
-
-    <div class="service">
-      <h3>📱 Convert Pulsa</h3>
-      <p>Layanan penukaran pulsa menjadi saldo digital.</p>
-    </div>
-
-    <div class="service">
-      <h3>💳 Top Up PayPal</h3>
-      <p>Layanan pengisian saldo PayPal.</p>
-    </div>
-  </section>
-
-  <section class="card">
-    <h2>Informasi Transaksi</h2>
-
-    <div class="note">
-      Website saat ini dalam tahap pengembangan.
-      Transaksi belum aktif dan belum menerima pembayaran.
-    </div>
-
-    <label>Jenis Layanan</label>
-    <select id="layanan">
-      <option value="Convert Pulsa">Convert Pulsa</option>
-      <option value="Top Up PayPal">Top Up PayPal</option>
-    </select>
-
-    <label>Nominal Transaksi (Rp)</label>
-    <input type="number" id="nominal"
-      placeholder="Contoh: 100000" min="1">
-
-    <label>Nomor HP / Email PayPal</label>
-    <input type="text" id="kontak"
-      placeholder="Masukkan informasi kontak">
-
-    <button onclick="buatPesanan()">
-      Buat Pesanan
-    </button>
-
-    <p id="hasil"></p>
-  </section>
-</main>
-
-<footer>
-  © 2026 PayPulsa. All Rights Reserved.
-  <br>Website dalam tahap pengembangan.
-</footer>
-
-<script>
-function buatPesanan() {
-  const layanan = document.getElementById("layanan").value;
-  const nominal = document.getElementById("nominal").value;
-  const kontak = document.getElementById("kontak").value;
-
-  if (!nominal || Number(nominal) <= 0 || !kontak.trim()) {
-    alert("Mohon lengkapi semua informasi.");
-    return;
+  } catch (error) {
+    hasil.innerText = "Terjadi kesalahan: " + error.message;
   }
-
-  document.getElementById("hasil").textContent =
-    "Formulir " + layanan +
-    " berhasil diperiksa. Sistem pembayaran belum aktif.";
 }
-</script>
-
-</body>
-</html>
