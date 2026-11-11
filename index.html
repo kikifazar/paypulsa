@@ -520,3 +520,93 @@
   </script>
 </body>
 </html>
+ocument.getElementById("accountNumber").value.trim()
+      };
+
+      submitting = true;
+      button.disabled = true;
+      button.textContent = "Memproses pesanan...";
+      showMessage("Menghubungkan ke PayPal Sandbox...");
+
+      try {
+        const response = await fetch(`${API}/api/orders`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            result.error ||
+            result.message ||
+            "Pembuatan pesanan gagal."
+          );
+        }
+
+        // Cari approval URL dari respons API.
+        let approvalUrl =
+          result.approval_url ||
+          result.approvalUrl ||
+          result.approve_url ||
+          result.approveUrl ||
+          result.links?.find(
+            link => link.rel === "approve"
+          )?.href;
+
+        if (!approvalUrl && result.data) {
+          const nested = result.data;
+
+          approvalUrl =
+            nested.approval_url ||
+            nested.approvalUrl ||
+            nested.approve_url ||
+            nested.links?.find(
+              link => link.rel === "approve"
+            )?.href;
+        }
+
+        if (!approvalUrl) {
+          throw new Error(
+            "Order dibuat tetapi approval URL tidak ditemukan. Periksa respons API sebelum melanjutkan."
+          );
+        }
+
+        const url = new URL(approvalUrl);
+
+        if (
+          url.protocol !== "https:" ||
+          !(
+            url.hostname === "paypal.com" ||
+            url.hostname.endsWith(".paypal.com")
+          )
+        ) {
+          throw new Error("Alamat pembayaran PayPal tidak valid.");
+        }
+
+        showMessage(
+          "Order berhasil dibuat. Mengalihkan ke PayPal Sandbox...",
+          "success"
+        );
+
+        window.location.assign(url.href);
+
+      } catch (error) {
+        showMessage(
+          error.message || "Terjadi kesalahan saat membuat order.",
+          "error"
+        );
+
+        submitting = false;
+        button.disabled = false;
+        button.textContent = "Lanjut ke pembayaran";
+      }
+    });
+
+    loadSettings();
+  </script>
+</body>
+</html>
