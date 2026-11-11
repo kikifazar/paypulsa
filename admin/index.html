@@ -1,48 +1,173 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#101827">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1220">
 <title>PayPulsa Admin — Sandbox</title>
 <style>
-:root{color-scheme:dark;--bg:#0b1220;--panel:#121d30;--line:#26364e;--muted:#9aabc2;--text:#f4f7fb;--accent:#38bdf8}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px Arial,sans-serif}
-.wrap{max-width:1100px;margin:auto;padding:24px 16px 50px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:24px}
-h1{font-size:22px;margin:0}.sub{color:var(--muted);font-size:13px;margin-top:6px}
-.tag{border:1px solid #854d0e;color:#fcd34d;background:#422006;padding:7px 10px;border-radius:20px;font-size:11px;font-weight:bold;letter-spacing:.06em}
-.notice{border:1px solid #854d0e;background:#2b1d0b;color:#fde68a;padding:13px 15px;border-radius:12px;line-height:1.5;margin-bottom:20px}
-.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0}
-.card,.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:17px}
-.metric{font-size:12px;color:var(--muted)}.value{font-size:25px;font-weight:bold;margin-top:9px}
-.panel{margin-top:16px}.panel h2{font-size:16px;margin:0 0 14px}
-.login{max-width:420px;margin:35px auto}.field{display:block;width:100%;padding:13px;margin:8px 0 14px;border:1px solid var(--line);border-radius:9px;background:#0b1424;color:var(--text)}
-button{border:0;border-radius:9px;padding:12px 16px;font-weight:bold;background:#334155;color:#cbd5e1;cursor:not-allowed}
-table{width:100%;border-collapse:collapse;min-width:650px}th,td{text-align:left;padding:13px 10px;border-bottom:1px solid var(--line);font-size:13px}th{color:var(--muted);font-weight:600}
-.tablewrap{overflow-x:auto}.empty{text-align:center;color:var(--muted);padding:24px}
-small{color:var(--muted);line-height:1.6;display:block;margin-top:12px}
-@media(max-width:700px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.value{font-size:21px}.wrap{padding:18px 12px}}
+:root{color-scheme:dark;--bg:#0b1220;--panel:#121d30;--panel2:#0e192b;--line:#26364e;--text:#f4f7fb;--muted:#9aabc2;--blue:#38bdf8;--green:#34d399;--yellow:#fbbf24;--red:#fb7185}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 Inter,system-ui,Arial,sans-serif}
+button,input{font:inherit}.wrap{max-width:1440px;margin:auto;padding:24px 18px 48px}.top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+h1{font-size:23px;margin:0}.sub,.muted,small{color:var(--muted)}.tag{padding:6px 10px;border:1px solid #854d0e;border-radius:30px;color:#fcd34d;background:#422006;font-size:11px;font-weight:800;letter-spacing:.08em}
+.panel,.metric{background:var(--panel);border:1px solid var(--line);border-radius:14px}.panel{padding:18px;margin:16px 0}.panel h2{font-size:16px;margin:0 0 14px}.login{max-width:460px;margin:8vh auto}.field{display:block;width:100%;padding:12px 13px;margin:7px 0 14px;border:1px solid var(--line);border-radius:9px;background:var(--panel2);color:var(--text)}
+.btn{border:0;border-radius:9px;padding:10px 14px;background:#0369a1;color:white;font-weight:700;cursor:pointer}.btn:disabled{opacity:.45;cursor:not-allowed}.btn.secondary{background:#334155}.btn.danger{background:#9f1239}.btn.success{background:#047857}.btn.small{padding:7px 10px;font-size:12px}
+.notice{padding:12px 14px;border:1px solid #854d0e;border-radius:10px;background:#2b1d0b;color:#fde68a;margin:14px 0}.error{color:#fecaca;background:#451a1a;border-color:#7f1d1d}.success-note{color:#bbf7d0;background:#052e24;border-color:#065f46}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0}.metric{padding:16px}.metric-label{font-size:12px;color:var(--muted)}.metric-value{font-size:25px;font-weight:800;margin-top:7px;overflow-wrap:anywhere}
+.toolbar{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.toolbar input{flex:1;min-width:180px;margin:0}.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:10px}table{width:100%;border-collapse:collapse;min-width:850px}th,td{padding:12px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;font-size:12px}th{color:var(--muted);font-weight:700;background:#0e192b;position:sticky;top:0}tr:last-child td{border-bottom:0}.empty{text-align:center;padding:25px;color:var(--muted)}.pill{display:inline-block;padding:3px 8px;border-radius:20px;background:#26364e;color:#cbd5e1;font-size:11px;white-space:nowrap}.pill.good{background:#064e3b;color:#a7f3d0}.pill.warn{background:#78350f;color:#fde68a}.pill.bad{background:#881337;color:#fecdd3}.row-actions{display:flex;gap:6px;flex-wrap:wrap}.hidden{display:none!important}.foot{margin-top:20px;font-size:12px;color:var(--muted)}.detail{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;color:var(--muted);max-width:260px}
+@media(max-width:800px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.wrap{padding:16px 11px 35px}.metric-value{font-size:21px}}
 </style>
 </head>
 <body>
 <main class="wrap">
-<header class="top"><div><h1>PayPulsa Admin</h1><div class="sub">Panel pengelolaan transaksi dan payout</div></div><span class="tag">SANDBOX TESTING</span></header>
-<div class="notice"><strong>Mode tampilan awal.</strong> Halaman ini belum terhubung ke API atau database. Jangan gunakan untuk menandai payout sungguhan. Fitur login, pemuatan transaksi, dan konfirmasi payout akan diaktifkan setelah backend admin diamankan.</div>
-<section class="panel login">
-<h2>Login Admin</h2>
-<label for="admin-user">Email / ID Admin</label><input id="admin-user" class="field" type="text" autocomplete="username" placeholder="ID admin">
-<label for="admin-pass">Password</label><input id="admin-pass" class="field" type="password" autocomplete="current-password" placeholder="Password admin">
-<button type="button" disabled>Masuk — belum aktif</button>
-<small>Form ini hanya rancangan antarmuka. Jangan masukkan atau kirim password di halaman ini.</small>
+<header class="top"><div><h1>PayPulsa Admin</h1><div class="sub">Pengelolaan transaksi dan pencatatan payout</div></div><span class="tag">SANDBOX ONLY</span></header>
+<div id="notice" class="notice">Panel ini ditujukan untuk Sandbox. Konfirmasi payout hanya mencatat bahwa admin telah melakukan transfer secara terpisah; halaman ini tidak mengirim uang.</div>
+
+<section id="loginPanel" class="panel login">
+<h2>Masuk Admin</h2>
+<p class="muted">Masukkan ADMIN_API_TOKEN Sandbox. Token tidak disimpan permanen di browser.</p>
+<label for="apiToken">Admin API Token</label>
+<input id="apiToken" class="field" type="password" autocomplete="off" placeholder="Tempel token admin Sandbox">
+<button id="loginBtn" class="btn">Hubungkan ke Sandbox</button>
+<div id="loginError" class="notice error hidden"></div>
+<small>Jangan gunakan token Live di halaman Sandbox dan jangan bagikan token melalui chat.</small>
 </section>
-<section class="grid" aria-label="Ringkasan transaksi">
-<div class="card"><div class="metric">Total transaksi</div><div class="value">—</div></div>
-<div class="card"><div class="metric">Menunggu payout</div><div class="value">—</div></div>
-<div class="card"><div class="metric">Payout sukses</div><div class="value">—</div></div>
-<div class="card"><div class="metric">Total nominal payout</div><div class="value">—</div></div>
+
+<section id="dashboard" class="hidden">
+<div class="toolbar">
+<span id="connectionState" class="pill good">Terhubung</span>
+<button id="refreshBtn" class="btn secondary">Muat ulang</button>
+<button id="logoutBtn" class="btn danger">Keluar</button>
+<span id="lastUpdated" class="muted"></span>
+</div>
+<div class="grid">
+<div class="metric"><div class="metric-label">Total pesanan dimuat</div><div id="mTotal" class="metric-value">—</div></div>
+<div class="metric"><div class="metric-label">Menunggu payout</div><div id="mPending" class="metric-value">—</div></div>
+<div class="metric"><div class="metric-label">Payout tercatat sukses</div><div id="mSuccess" class="metric-value">—</div></div>
+<div class="metric"><div class="metric-label">Total payout sukses (IDR)</div><div id="mAmount" class="metric-value">—</div></div>
+</div>
+
+<section class="panel">
+<h2>Daftar transaksi</h2>
+<div class="toolbar">
+<input id="searchOrders" class="field" type="search" placeholder="Cari order ID, nama, email, atau status">
+<button id="ordersBtn" class="btn secondary">Muat pesanan</button>
+</div>
+<div class="tablewrap"><table><thead><tr><th>Order ID</th><th>Pelanggan</th><th>Nominal</th><th>Status pembayaran</th><th>Status payout</th><th>Tujuan payout</th><th>Aksi</th></tr></thead><tbody id="ordersBody"><tr><td colspan="7" class="empty">Memuat data…</td></tr></tbody></table></div>
 </section>
-<section class="panel"><h2>Transaksi menunggu payout</h2><div class="tablewrap"><table><thead><tr><th>ID Pesanan</th><th>Pelanggan</th><th>Nominal</th><th>Tujuan payout</th><th>Status pembayaran</th><th>Aksi</th></tr></thead><tbody><tr><td colspan="6" class="empty">Data transaksi belum dimuat — API belum terhubung.</td></tr></tbody></table></div></section>
-<section class="panel"><h2>Riwayat payout</h2><div class="empty">Riwayat akan tampil setelah backend admin diintegrasikan.</div></section>
+
+<section class="panel">
+<h2>Riwayat payout</h2>
+<div class="toolbar"><button id="historyBtn" class="btn secondary">Muat riwayat payout</button></div>
+<div class="tablewrap"><table><thead><tr><th>Waktu</th><th>Order ID</th><th>Nominal IDR</th><th>Metode</th><th>Provider</th><th>Nama akun</th><th>Nomor akun</th><th>Status</th></tr></thead><tbody id="historyBody"><tr><td colspan="8" class="empty">Klik “Muat riwayat payout”.</td></tr></tbody></table></div>
+</section>
+</section>
+<p class="foot">PayPulsa Admin Sandbox. Jangan arahkan panel ini ke Worker Live. Aksi payout memerlukan verifikasi transfer di luar sistem sebelum dikonfirmasi.</p>
 </main>
+<script>
+(() => {
+'use strict';
+const API_BASE = 'https://paypulsa-api-sandbox.shanowellexcel.workers.dev';
+const PATHS = { orders:'/api/admin/orders', history:'/api/admin/payouts', payout:id=>'/api/admin/payout/'+encodeURIComponent(id) };
+let token = '';
+let orders = [];
+let history = [];
+const $ = id => document.getElementById(id);
+const fmt = v => { const n=Number(v); return Number.isFinite(n) ? new Intl.NumberFormat('id-ID').format(n) : (v ?? '—'); };
+const money = v => 'Rp '+fmt(v);
+const pick = (o, keys, fallback='—') => { for (const k of keys) if (o && o[k] !== undefined && o[k] !== null && o[k] !== '') return o[k]; return fallback; };
+const asArray = data => {
+  if (Array.isArray(data)) return data;
+  for (const k of ['orders','items','data','results','payouts','history']) if (Array.isArray(data?.[k])) return data[k];
+  if (data?.data && typeof data.data==='object') for (const k of ['orders','items','payouts','history']) if (Array.isArray(data.data[k])) return data.data[k];
+  return [];
+};
+const esc = v => String(v ?? '—').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function notice(message, kind='') { const el=$('notice'); el.textContent=message; el.className='notice'+(kind==='error'?' error':kind==='success'?' success-note':''); }
+function authHeaders(){ return {'Authorization':'Bearer '+token,'Content-Type':'application/json'}; }
+async function api(path, options={}) {
+  const res=await fetch(API_BASE+path,{...options,headers:{...authHeaders(),...(options.headers||{})}});
+  const raw=await res.text(); let data={}; try{data=raw?JSON.parse(raw):{};}catch{data={message:raw};}
+  if(!res.ok) throw new Error(data.error||data.message||('HTTP '+res.status));
+  if(data && data.success===false) throw new Error(data.error||data.message||'Permintaan gagal');
+  return data;
+}
+function statusPill(value) {
+  const s=String(value??'UNKNOWN').toUpperCase();
+  const cls=['COMPLETED','SUCCESS','PROCESSED'].includes(s)?'good':['NOT_PROCESSED','PENDING','RECONCILE'].includes(s)?'warn':['FAILED','CANCELLED','ERROR'].includes(s)?'bad':'';
+  return '<span class="pill '+cls+'">'+esc(s)+'</span>';
+}
+function orderId(o){return pick(o,['id','order_id','orderID','uuid']);}
+function payStatus(o){return pick(o,['payment_status','status_payment','paymentStatus']);}
+function payoutStatus(o){return pick(o,['payout_status','payoutStatus'],'NOT_PROCESSED');}
+function canPayout(o){return String(payStatus(o)).toUpperCase()==='COMPLETED' && String(payoutStatus(o)).toUpperCase()==='NOT_PROCESSED';}
+function renderOrders(){
+ const q=$('searchOrders').value.trim().toLowerCase();
+ const rows=orders.filter(o=>JSON.stringify(o).toLowerCase().includes(q));
+ $('ordersBody').innerHTML=rows.length?rows.map(o=>{
+  const id=orderId(o), can=canPayout(o);
+  const name=pick(o,['customer_name','name','payer_name','paypal_name']);
+  const amount=pick(o,['idr_amount','amount_idr','payout_amount','amount']);
+  const dest=[pick(o,['payout_provider','provider']),pick(o,['payout_account_name','account_name']),pick(o,['payout_account_number','account_number'])].filter(x=>x!=='—').join(' / ')||'—';
+  return '<tr><td><span class="detail">'+esc(id)+'</span></td><td>'+esc(name)+'<div class="detail">'+esc(pick(o,['customer_email','email'],''))+'</div></td><td>'+esc(money(amount))+'</td><td>'+statusPill(payStatus(o))+'</td><td>'+statusPill(payoutStatus(o))+'</td><td><div class="detail">'+esc(dest)+'</div></td><td><div class="row-actions">'+(can?'<button class="btn success small" data-payout="'+esc(id)+'">Konfirmasi payout</button>':'<span class="muted">—</span>')+'</div></td></tr>';
+ }).join(''):'<tr><td colspan="7" class="empty">Tidak ada transaksi yang cocok.</td></tr>';
+}
+function renderHistory(){
+ $('historyBody').innerHTML=history.length?history.map(o=>'<tr><td>'+esc(pick(o,['created_at','createdAt','timestamp']))+'</td><td><span class="detail">'+esc(pick(o,['order_id','orderID']))+'</span></td><td>'+esc(money(pick(o,['amount_idr','idr_amount','amount'])))+'</td><td>'+esc(pick(o,['payout_method','method']))+'</td><td>'+esc(pick(o,['payout_provider','provider']))+'</td><td>'+esc(pick(o,['payout_account_name','account_name']))+'</td><td>'+esc(pick(o,['payout_account_number','account_number']))+'</td><td>'+statusPill(pick(o,['status'],'SUCCESS'))+'</td></tr>').join(''):'<tr><td colspan="8" class="empty">Belum ada riwayat payout atau data kosong.</td></tr>';
+}
+function metrics(){
+ $('mTotal').textContent=fmt(orders.length);
+ $('mPending').textContent=fmt(orders.filter(canPayout).length);
+ $('mSuccess').textContent=fmt(history.length);
+ const sum=history.reduce((n,o)=>n+(Number(pick(o,['amount_idr','idr_amount','amount'],0))||0),0);
+ $('mAmount').textContent=money(sum);
+}
+async function loadOrders(){
+ $('ordersBody').innerHTML='<tr><td colspan="7" class="empty">Memuat pesanan…</td></tr>';
+ const data=await api(PATHS.orders); orders=asArray(data); renderOrders(); metrics();
+}
+async function loadHistory(){
+ $('historyBody').innerHTML='<tr><td colspan="8" class="empty">Memuat riwayat…</td></tr>';
+ const data=await api(PATHS.history); history=asArray(data); renderHistory(); metrics();
+}
+async function refreshAll(){
+ $('refreshBtn').disabled=true;
+ try{await Promise.all([loadOrders(),loadHistory()]);$('lastUpdated').textContent='Diperbarui '+new Date().toLocaleString('id-ID');notice('Terhubung ke Worker Sandbox. Periksa detail transaksi sebelum melakukan konfirmasi payout.','success');}
+ catch(e){notice('Gagal memuat data: '+e.message,'error');}
+ finally{$('refreshBtn').disabled=false;}
+}
+async function login(){
+ const value=$('apiToken').value.trim(); if(!value){$('loginError').textContent='Token wajib diisi.';$('loginError').classList.remove('hidden');return;}
+ token=value; $('loginBtn').disabled=true; $('loginError').classList.add('hidden');
+ try{
+  await api(PATHS.orders);
+  $('loginPanel').classList.add('hidden');$('dashboard').classList.remove('hidden');
+  await refreshAll();
+ }catch(e){token='';$('loginError').textContent='Autentikasi/koneksi gagal: '+e.message;$('loginError').classList.remove('hidden');}
+ finally{$('loginBtn').disabled=false;}
+}
+async function confirmPayout(id){
+ const row=orders.find(o=>String(orderId(o))===String(id));
+ if(!row||!canPayout(row)){notice('Pesanan tidak memenuhi syarat payout.','error');return;}
+ const amount=money(pick(row,['idr_amount','amount_idr','payout_amount','amount']));
+ const target=[pick(row,['payout_provider','provider']),pick(row,['payout_account_name','account_name']),pick(row,['payout_account_number','account_number'])].filter(x=>x!=='—').join(' / ');
+ const ok=confirm('Pastikan transfer dana sudah benar-benar dilakukan di luar sistem.\n\nOrder: '+id+'\nNominal: '+amount+'\nTujuan: '+(target||'lihat detail pesanan')+'\n\nLanjut catat payout sebagai SUCCESS?');
+ if(!ok)return;
+ try{
+  await api(PATHS.payout(id),{method:'POST'});
+  notice('Konfirmasi payout berhasil dicatat untuk order '+id+'.','success');
+  await refreshAll();
+ }catch(e){notice('Konfirmasi payout gagal: '+e.message,'error');}
+}
+$('loginBtn').addEventListener('click',login);
+$('apiToken').addEventListener('keydown',e=>{if(e.key==='Enter')login();});
+$('refreshBtn').addEventListener('click',refreshAll);
+$('ordersBtn').addEventListener('click',()=>loadOrders().catch(e=>notice(e.message,'error')));
+$('historyBtn').addEventListener('click',()=>loadHistory().catch(e=>notice(e.message,'error')));
+$('logoutBtn').addEventListener('click',()=>{token='';orders=[];history=[];$('apiToken').value='';$('dashboard').classList.add('hidden');$('loginPanel').classList.remove('hidden');notice('Anda telah keluar dari panel admin.');});
+$('searchOrders').addEventListener('input',renderOrders);
+$('ordersBody').addEventListener('click',e=>{const b=e.target.closest('[data-payout]');if(b)confirmPayout(b.dataset.payout);});
+})();
+</script>
 </body>
 </html>
