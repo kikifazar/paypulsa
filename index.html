@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#101827">
 <title>PayPulsa — PayPal ke Rupiah</title>
+
 <style>
 *{box-sizing:border-box}
 body{
@@ -60,39 +61,73 @@ button:disabled{opacity:.55;cursor:not-allowed}
 .result{
   display:none;margin:15px 0;padding:18px;
   border:1px solid #475569;border-radius:12px;
-  background:#101827;text-align:center;line-height:1.7
+  background:#101827;text-align:left;line-height:1.7;
+  overflow-wrap:anywhere
 }
-.result h3{margin:0 0 10px}
+.result h3{margin:0 0 10px;text-align:center}
+.result-detail{
+  margin-top:15px;padding-top:12px;
+  border-top:1px solid #344256;font-size:13px
+}
+.result-row{
+  display:flex;justify-content:space-between;
+  gap:12px;padding:5px 0
+}
+.result-row span:first-child{color:#aab8ca}
+.result-row span:last-child{
+  text-align:right;overflow-wrap:anywhere
+}
+.whatsapp-button{
+  display:block;width:100%;margin-top:18px;padding:15px;
+  border-radius:10px;background:#16a34a;color:white;
+  text-align:center;text-decoration:none;
+  font-size:15px;font-weight:bold
+}
+.whatsapp-button:active{opacity:.8}
+.whatsapp-note{
+  margin-top:9px;color:#aab8ca;
+  text-align:center;font-size:11px
+}
 @media(max-width:380px){
   .container{padding:18px}
   .estimate strong{font-size:21px}
+  .result-row{gap:8px}
 }
 </style>
 </head>
+
 <body>
 <main class="container">
+
   <div class="logo">PayPulsa</div>
   <div class="subtitle">Layanan penukaran PayPal ke Rupiah</div>
   <div class="sandbox">SANDBOX TESTING</div>
 
-  <div id="paymentResult" class="result" role="status" aria-live="polite"></div>
+  <div id="paymentResult" class="result"
+       role="status" aria-live="polite"></div>
 
   <form id="orderForm">
+
     <h3>Informasi pelanggan</h3>
 
     <label for="name">Nama lengkap</label>
-    <input id="name" name="name" autocomplete="name" maxlength="100" required>
+    <input id="name" name="name" autocomplete="name"
+           maxlength="100" required>
 
     <label for="email">Email aktif</label>
-    <input id="email" name="email" type="email" autocomplete="email" maxlength="254" required>
+    <input id="email" name="email" type="email"
+           autocomplete="email" maxlength="254" required>
 
     <label for="whatsapp">Nomor WhatsApp</label>
-    <input id="whatsapp" name="whatsapp" type="tel" autocomplete="tel" maxlength="30" required>
+    <input id="whatsapp" name="whatsapp" type="tel"
+           autocomplete="tel" maxlength="30" required>
 
     <h3>Jumlah penukaran</h3>
 
     <label for="usd">Nominal USD</label>
-    <input id="usd" name="usd" type="number" min="1" max="500" step="0.01" placeholder="Contoh: 20.00" required>
+    <input id="usd" name="usd" type="number"
+           min="1" max="500" step="0.01"
+           placeholder="Contoh: 20.00" required>
 
     <div class="estimate">
       <small>Estimasi rupiah yang diterima</small>
@@ -115,10 +150,12 @@ button:disabled{opacity:.55;cursor:not-allowed}
     </select>
 
     <label for="accountName">Nama pemilik rekening</label>
-    <input id="accountName" name="accountName" maxlength="100" required>
+    <input id="accountName" name="accountName"
+           maxlength="100" required>
 
     <label for="accountNumber">Nomor rekening / nomor e-wallet</label>
-    <input id="accountNumber" name="accountNumber" maxlength="50" required>
+    <input id="accountNumber" name="accountNumber"
+           maxlength="50" required>
 
     <button id="submitButton" type="submit" disabled>
       Lanjut ke pembayaran
@@ -132,10 +169,14 @@ button:disabled{opacity:.55;cursor:not-allowed}
     Gunakan akun dan data pengujian. Jangan gunakan
     untuk transaksi uang sungguhan.
   </div>
+
 </main>
 
 <script>
-const API = "https://paypulsa-api-sandbox.shanowellexcel.workers.dev";
+const API =
+  "https://paypulsa-api-sandbox.shanowellexcel.workers.dev";
+
+const WHATSAPP_ADMIN = "6281573599317";
 
 let settings = null;
 let submitting = false;
@@ -162,9 +203,56 @@ function showMessage(text, type = "") {
   message.className = type;
 }
 
-function showPaymentResult(title, detail, type) {
+function getSavedOrder(orderID) {
+  try {
+    const saved = sessionStorage.getItem(
+      "paypulsa_order_" + orderID
+    );
+
+    return saved ? JSON.parse(saved) : null;
+  } catch (error) {
+    return null;
+  }
+}
+
+function createWhatsAppMessage(orderID, order) {
+  const data = order || {};
+
+  const text = [
+    "Halo Admin PayPulsa, saya ingin mengonfirmasi pesanan penukaran saldo PayPal.",
+    "",
+    "DETAIL PESANAN",
+    "ID Pesanan: " + orderID,
+    "Nama: " + (data.name || "-"),
+    "Email PayPal: " + (data.email || "-"),
+    "Nomor WhatsApp: " + (data.whatsapp || "-"),
+    "Nominal PayPal: " + (data.usd || "-"),
+    "Estimasi Rupiah: " + (data.idr || "-"),
+    "Metode pencairan: " + (data.method || "-"),
+    "Bank / E-wallet: " + (data.provider || "-"),
+    "Nama pemilik rekening: " + (data.accountName || "-"),
+    "Nomor rekening / e-wallet: " + (data.accountNumber || "-"),
+    "",
+    "Mohon periksa pembayaran PayPal saya dan proses pencairan jika pembayaran sudah berhasil dikonfirmasi.",
+    "",
+    "Terima kasih."
+  ].join("\n");
+
+  return "https://wa.me/" +
+    WHATSAPP_ADMIN +
+    "?text=" +
+    encodeURIComponent(text);
+}
+
+function showPaymentResult(
+  title,
+  detail,
+  type,
+  orderID = null,
+  showWhatsApp = false
+) {
   paymentResult.style.display = "block";
-  paymentResult.innerHTML = "";
+  paymentResult.replaceChildren();
 
   const heading = document.createElement("h3");
   heading.textContent = title;
@@ -174,6 +262,64 @@ function showPaymentResult(title, detail, type) {
   paragraph.textContent = detail;
 
   paymentResult.append(heading, paragraph);
+
+  if (!orderID) return;
+
+  const order = getSavedOrder(orderID);
+
+  if (order) {
+    const detailBox = document.createElement("div");
+    detailBox.className = "result-detail";
+
+    const rows = [
+      ["ID Pesanan", orderID],
+      ["Nama", order.name],
+      ["Email PayPal", order.email],
+      ["WhatsApp", order.whatsapp],
+      ["Nominal USD", order.usd],
+      ["Estimasi IDR", order.idr],
+      ["Metode pencairan", order.method],
+      ["Bank / E-wallet", order.provider],
+      ["Nama pemilik", order.accountName],
+      ["Nomor tujuan", order.accountNumber]
+    ];
+
+    rows.forEach(([label, value]) => {
+      const row = document.createElement("div");
+      row.className = "result-row";
+
+      const left = document.createElement("span");
+      left.textContent = label;
+
+      const right = document.createElement("span");
+      right.textContent = value || "-";
+
+      row.append(left, right);
+      detailBox.appendChild(row);
+    });
+
+    paymentResult.appendChild(detailBox);
+  } else {
+    const idLine = document.createElement("p");
+    idLine.textContent = "ID Pesanan: " + orderID;
+    paymentResult.appendChild(idLine);
+  }
+
+  if (showWhatsApp) {
+    const link = document.createElement("a");
+    link.className = "whatsapp-button";
+    link.href = createWhatsAppMessage(orderID, order);
+    link.target = "_blank";
+    link.rel = "noopener noreferrer";
+    link.textContent = "WhatsApp Admin";
+
+    const note = document.createElement("div");
+    note.className = "whatsapp-note";
+    note.textContent =
+      "Pesan konfirmasi akan terisi otomatis dengan detail pesanan.";
+
+    paymentResult.append(link, note);
+  }
 }
 
 async function processPayPalReturn() {
@@ -182,11 +328,24 @@ async function processPayPalReturn() {
   const orderID = params.get("order_id");
 
   if (payment === "cancel") {
-    showPaymentResult(
-      "Pembayaran dibatalkan",
-      "Kamu membatalkan proses pembayaran PayPal. Silakan periksa pesanan sebelum mencoba kembali.",
-      "error"
-    );
+    form.style.display = "none";
+
+    if (orderID && /^[0-9a-f-]{36}$/i.test(orderID)) {
+      showPaymentResult(
+        "Pembayaran dibatalkan",
+        "Pembayaran PayPal belum dikonfirmasi. Anda dapat menghubungi admin untuk pemeriksaan pesanan.",
+        "error",
+        orderID,
+        true
+      );
+    } else {
+      showPaymentResult(
+        "Pembayaran dibatalkan",
+        "Kamu membatalkan proses pembayaran PayPal. Silakan periksa pesanan sebelum mencoba kembali.",
+        "error"
+      );
+    }
+
     return;
   }
 
@@ -205,7 +364,7 @@ async function processPayPalReturn() {
 
   showPaymentResult(
     "Memproses pembayaran...",
-    "Persetujuan PayPal diterima. PayPulsa sedang meminta konfirmasi capture pembayaran.",
+    "PayPulsa sedang memeriksa dan mengonfirmasi pembayaran PayPal.",
     "pending"
   );
 
@@ -220,43 +379,54 @@ async function processPayPalReturn() {
     if (response.ok && result.status === "COMPLETED") {
       showPaymentResult(
         "Pembayaran Berhasil!",
-        "Pembayaran PayPal sudah berhasil dikonfirmasi. Status pencairan Rupiah: belum diproses. Simpan ID pesanan: " + orderID,
-        "success"
+        "Pembayaran PayPal sudah berhasil dikonfirmasi. Pencairan Rupiah belum dilakukan. Silakan konfirmasi pesanan kepada admin.",
+        "success",
+        orderID,
+        true
       );
 
       const cleanURL = new URL(window.location.href);
       cleanURL.searchParams.delete("payment");
       cleanURL.searchParams.delete("order_id");
-      window.history.replaceState({}, document.title, cleanURL.pathname + cleanURL.search + cleanURL.hash);
+
+      window.history.replaceState(
+        {},
+        document.title,
+        cleanURL.pathname + cleanURL.search + cleanURL.hash
+      );
 
       return;
     }
 
     if (response.status === 202) {
       showPaymentResult(
-        "Perlu Pemeriksaan",
-        (result.error || "Status capture belum dapat dipastikan.") +
-        " ID pesanan: " + orderID +
-        ". Jangan melakukan pembayaran ulang.",
-        "pending"
+        "Perlu Pemeriksaan Admin",
+        (result.error || "Status pembayaran belum dapat dipastikan.") +
+        " Jangan melakukan pembayaran ulang. Hubungi admin untuk pemeriksaan.",
+        "pending",
+        orderID,
+        true
       );
       return;
     }
 
     showPaymentResult(
       "Pembayaran Belum Terkonfirmasi",
-      (result.error || result.message || "Server belum mengonfirmasi pembayaran.") +
-      " ID pesanan: " + orderID +
-      ". Jangan melakukan pembayaran ulang.",
-      "error"
+      (result.error || result.message ||
+        "Server belum mengonfirmasi pembayaran.") +
+      " Jangan melakukan pembayaran ulang. Hubungi admin untuk pemeriksaan.",
+      "error",
+      orderID,
+      true
     );
 
   } catch (error) {
     showPaymentResult(
       "Koneksi belum berhasil",
-      "Permintaan capture belum mendapatkan jawaban yang dapat dipastikan. ID pesanan: " +
-      orderID + ". Jangan membayar ulang. Hubungi admin untuk pemeriksaan.",
-      "error"
+      "Status pembayaran belum dapat dipastikan. Jangan membayar ulang. Hubungi admin untuk pemeriksaan.",
+      "error",
+      orderID,
+      true
     );
   }
 }
@@ -268,7 +438,9 @@ async function loadSettings() {
     const response = await fetch(`${API}/api/settings`);
 
     if (!response.ok) {
-      throw new Error(`Server pengaturan merespons HTTP ${response.status}.`);
+      throw new Error(
+        `Server pengaturan merespons HTTP ${response.status}.`
+      );
     }
 
     const data = await response.json();
@@ -295,22 +467,34 @@ async function loadSettings() {
     usdInput.min = min;
     usdInput.max = max;
 
-    rateInfo.textContent = `Kurs: ${rupiah(rate)} per USD`;
+    rateInfo.textContent =
+      `Kurs: ${rupiah(rate)} per USD`;
+
     updateEstimate();
 
     if (!settings.paymentEnabled) {
-      showMessage("Pembayaran sedang dinonaktifkan.", "error");
+      showMessage(
+        "Pembayaran sedang dinonaktifkan.",
+        "error"
+      );
       return;
     }
 
     button.disabled = false;
-    showMessage("Server Sandbox berhasil terhubung.", "success");
+    showMessage(
+      "Server Sandbox berhasil terhubung.",
+      "success"
+    );
 
   } catch (error) {
     settings = null;
     idrOutput.textContent = "Kurs tidak tersedia";
     rateInfo.textContent = "Gagal menghubungkan server.";
-    showMessage(error.message || "Gagal memuat pengaturan.", "error");
+
+    showMessage(
+      error.message || "Gagal memuat pengaturan.",
+      "error"
+    );
   }
 }
 
@@ -324,12 +508,16 @@ function updateEstimate() {
     return;
   }
 
-  if (value < settings.min || value > settings.max) {
+  if (
+    value < settings.min ||
+    value > settings.max
+  ) {
     idrOutput.textContent = "Nominal di luar batas";
     return;
   }
 
-  idrOutput.textContent = rupiah(value * settings.rate);
+  idrOutput.textContent =
+    rupiah(value * settings.rate);
 }
 
 usdInput.addEventListener("input", updateEstimate);
@@ -345,6 +533,192 @@ method.addEventListener("change", () => {
   ];
 
   const options =
+    method.value === "bank" ? banks :
+    method.value === "ewallet" ? wallets : [];
+
+  provider.replaceChildren();
+
+  const first = document.createElement("option");
+  first.value = "";
+  first.textContent = "Pilih tujuan pencairan";
+  provider.appendChild(first);
+
+  options.forEach(item => {
+    const option = document.createElement("option");
+    option.value = item;
+    option.textContent = item;
+    provider.appendChild(option);
+  });
+});
+
+form.addEventListener("submit", async event => {
+  event.preventDefault();
+
+  if (submitting) return;
+
+  if (!settings || !settings.paymentEnabled) {
+    showMessage(
+      "Layanan pembayaran belum siap.",
+      "error"
+    );
+    return;
+  }
+
+  const amount = Number(usdInput.value);
+
+  if (
+    !Number.isFinite(amount) ||
+    amount < settings.min ||
+    amount > settings.max
+  ) {
+    showMessage(
+      `Nominal harus antara $${settings.min} dan $${settings.max}.`,
+      "error"
+    );
+    return;
+  }
+
+  const payload = {
+    amount,
+    name: document.getElementById("name").value.trim(),
+    email: document.getElementById("email").value.trim(),
+    whatsapp: document.getElementById("whatsapp").value.trim(),
+    method: method.value,
+    provider: provider.value,
+    accountName: document.getElementById("accountName").value.trim(),
+    accountNumber: document.getElementById("accountNumber").value.trim()
+  };
+
+  submitting = true;
+  button.disabled = true;
+  button.textContent = "Memproses pesanan...";
+
+  showMessage("Menghubungkan ke PayPal Sandbox...");
+
+  try {
+    const response = await fetch(`${API}/api/orders`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        result.error ||
+        result.message ||
+        `Pembuatan pesanan gagal (HTTP ${response.status}).`
+      );
+    }
+
+    if (
+      !result.order_id ||
+      !/^[0-9a-f-]{36}$/i.test(result.order_id)
+    ) {
+      throw new Error(
+        "Order dibuat tetapi UUID internal tidak ditemukan. Hubungi admin."
+      );
+    }
+
+    const approvalUrl =
+      result.approval_url ||
+      result.approvalUrl ||
+      result.approve_url ||
+      result.approveUrl ||
+      result.links?.find(
+        link => link.rel === "approve"
+      )?.href;
+
+    const orderSummary = {
+      name: payload.name,
+      email: payload.email,
+      whatsapp: payload.whatsapp,
+      usd: "$" + (
+        result.usd || amount.toFixed(2)
+      ),
+      idr: rupiah(
+        Number(result.idr || amount * settings.rate)
+      ),
+      method:
+        payload.method === "bank"
+          ? "Transfer bank"
+          : "E-wallet",
+      provider: payload.provider,
+      accountName: payload.accountName,
+      accountNumber: payload.accountNumber
+    };
+
+    try {
+      sessionStorage.setItem(
+        "paypulsa_order_" + result.order_id,
+        JSON.stringify(orderSummary)
+      );
+    } catch (storageError) {
+      console.warn(
+        "Data pesanan tidak dapat disimpan sementara.",
+        storageError
+      );
+    }
+
+    if (!approvalUrl) {
+      throw new Error(
+        "Order dibuat tetapi approval URL tidak ditemukan. Hubungi admin dengan ID pesanan: " +
+        result.order_id
+      );
+    }
+
+    const url = new URL(approvalUrl);
+
+    if (
+      url.protocol !== "https:" ||
+      !(
+        url.hostname === "paypal.com" ||
+        url.hostname.endsWith(".paypal.com")
+      )
+    ) {
+      throw new Error(
+        "Alamat pembayaran PayPal tidak valid."
+      );
+    }
+
+    showMessage(
+      "Order berhasil dibuat. Mengalihkan ke PayPal Sandbox...",
+      "success"
+    );
+
+    window.location.assign(url.href);
+
+  } catch (error) {
+    showMessage(
+      error.message ||
+      "Terjadi kesalahan saat membuat order.",
+      "error"
+    );
+
+    submitting = false;
+    button.disabled = false;
+    button.textContent = "Lanjut ke pembayaran";
+  }
+});
+
+async function initialize() {
+  await processPayPalReturn();
+
+  if (
+    !new URLSearchParams(window.location.search)
+      .has("payment")
+  ) {
+    await loadSettings();
+  }
+}
+
+initialize();
+</script>
+</body>
+</html>ptions =
     method.value === "bank" ? banks :
     method.value === "ewallet" ? wallets : [];
 
