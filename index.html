@@ -8,40 +8,63 @@
   <title>PayPulsa — PayPal ke Rupiah</title>
   <style>
     * { box-sizing: border-box; }
+
     body {
       margin: 0;
-      padding: 24px 14px;
+      padding: 20px 14px;
       background: #101827;
       color: #f8fafc;
       font-family: Arial, sans-serif;
     }
+
     .container {
       max-width: 480px;
-      margin: 20px auto;
-      padding: 25px;
+      margin: 15px auto;
+      padding: 24px;
       background: #1c293b;
       border: 1px solid #344256;
       border-radius: 18px;
+      box-shadow: 0 15px 40px rgba(0,0,0,.2);
     }
+
     .logo {
       text-align: center;
-      font-size: 28px;
+      font-size: 30px;
       font-weight: bold;
       color: #60a5fa;
     }
+
     .subtitle {
       text-align: center;
       color: #aab8ca;
-      font-size: 14px;
-      margin: 9px 0 25px;
+      font-size: 13px;
+      margin: 8px 0 24px;
     }
-    h3 { margin-top: 25px; font-size: 16px; }
+
+    .sandbox {
+      width: fit-content;
+      margin: 0 auto 20px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      background: #422006;
+      color: #fbbf24;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    h3 {
+      margin-top: 24px;
+      font-size: 16px;
+      color: #e2e8f0;
+    }
+
     label {
       display: block;
       margin: 15px 0 7px;
       font-size: 13px;
       color: #d5deea;
     }
+
     input, select {
       width: 100%;
       padding: 13px;
@@ -52,7 +75,11 @@
       font-size: 15px;
       outline: none;
     }
-    input:focus, select:focus { border-color: #60a5fa; }
+
+    input:focus, select:focus {
+      border-color: #60a5fa;
+    }
+
     .estimate {
       margin-top: 18px;
       padding: 18px;
@@ -60,13 +87,19 @@
       border-radius: 12px;
       text-align: center;
     }
-    .estimate small { color: #aab8ca; }
+
+    .estimate small {
+      color: #aab8ca;
+    }
+
     .estimate strong {
       display: block;
       margin-top: 9px;
       font-size: 25px;
       color: #4ade80;
+      overflow-wrap: anywhere;
     }
+
     button {
       width: 100%;
       margin-top: 23px;
@@ -79,49 +112,99 @@
       font-size: 16px;
       cursor: pointer;
     }
-    button:disabled { opacity: .55; cursor: not-allowed; }
+
+    button:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
     .notice {
-      margin-top: 15px;
+      margin-top: 17px;
       color: #aab8ca;
       font-size: 12px;
       line-height: 1.6;
       text-align: center;
     }
+
     #message {
       margin-top: 15px;
       font-size: 13px;
-      line-height: 1.5;
+      line-height: 1.6;
       text-align: center;
+      overflow-wrap: anywhere;
+    }
+
+    .success { color: #4ade80; }
+    .error { color: #f87171; }
+
+    @media(max-width: 380px) {
+      .container { padding: 18px; }
+      .estimate strong { font-size: 21px; }
     }
   </style>
 </head>
+
 <body>
   <main class="container">
+
     <div class="logo">PayPulsa</div>
-    <div class="subtitle">Layanan pembayaran PayPal ke Rupiah</div>
+    <div class="subtitle">
+      Layanan penukaran PayPal ke Rupiah
+    </div>
+
+    <div class="sandbox">SANDBOX TESTING</div>
 
     <form id="orderForm">
+
       <h3>Informasi pelanggan</h3>
 
       <label for="name">Nama lengkap</label>
-      <input id="name" name="name" autocomplete="name" required>
+      <input
+        id="name"
+        name="name"
+        autocomplete="name"
+        maxlength="100"
+        required
+      >
 
       <label for="email">Email aktif</label>
-      <input id="email" name="email" type="email" autocomplete="email" required>
+      <input
+        id="email"
+        name="email"
+        type="email"
+        autocomplete="email"
+        maxlength="254"
+        required
+      >
 
       <label for="whatsapp">Nomor WhatsApp</label>
-      <input id="whatsapp" name="whatsapp" type="tel" autocomplete="tel" required>
+      <input
+        id="whatsapp"
+        name="whatsapp"
+        type="tel"
+        autocomplete="tel"
+        maxlength="30"
+        required
+      >
 
       <h3>Jumlah penukaran</h3>
 
       <label for="usd">Nominal USD</label>
-      <input id="usd" name="usd" type="number" min="1" max="500"
-        step="0.01" placeholder="Contoh: 20.00" required>
+      <input
+        id="usd"
+        name="usd"
+        type="number"
+        min="1"
+        max="500"
+        step="0.01"
+        placeholder="Contoh: 20.00"
+        required
+      >
 
       <div class="estimate">
         <small>Estimasi rupiah yang diterima</small>
         <strong id="idr">Memuat kurs...</strong>
-        <small id="rateInfo">Menghubungkan ke server PayPulsa</small>
+        <small id="rateInfo">Menghubungkan ke server Sandbox</small>
       </div>
 
       <h3>Tujuan pencairan</h3>
@@ -139,29 +222,46 @@
       </select>
 
       <label for="accountName">Nama pemilik rekening</label>
-      <input id="accountName" name="accountName" required>
+      <input
+        id="accountName"
+        name="accountName"
+        maxlength="100"
+        required
+      >
 
       <label for="accountNumber">Nomor rekening / nomor e-wallet</label>
-      <input id="accountNumber" name="accountNumber" required>
+      <input
+        id="accountNumber"
+        name="accountNumber"
+        maxlength="50"
+        required
+      >
 
       <button id="submitButton" type="submit" disabled>
         Lanjut ke pembayaran
       </button>
 
-      <div id="message" role="status"></div>
+      <div id="message" role="status" aria-live="polite"></div>
+
     </form>
 
     <div class="notice">
-      Estimasi mengikuti kurs PayPulsa yang berlaku.
-      Pesanan akan diverifikasi sebelum pencairan.
+      Ini adalah lingkungan pengujian PayPal Sandbox.
+      Gunakan akun dan data pengujian. Jangan gunakan
+      untuk transaksi uang sungguhan.
     </div>
+
   </main>
 
   <script>
-    const API = "https://paypulsa-api.shanowellexcel.workers.dev";
+    // WAJIB menggunakan Worker SANDBOX
+    const API =
+      "https://paypulsa-api-sandbox.shanowellexcel.workers.dev";
 
     let settings = null;
+    let submitting = false;
 
+    const form = document.getElementById("orderForm");
     const usdInput = document.getElementById("usd");
     const idrOutput = document.getElementById("idr");
     const rateInfo = document.getElementById("rateInfo");
@@ -177,75 +277,115 @@
         maximumFractionDigits: 0
       }).format(value);
 
-    async function loadSettings() {
-      try {
-        const res = await fetch(`${API}/api/settings`);
-        if (!res.ok) throw new Error("Pengaturan belum tersedia.");
+    function showMessage(text, type = "") {
+      message.textContent = text;
+      message.className = type;
+    }
 
-        const data = await res.json();
+    async function loadSettings() {
+      button.disabled = true;
+
+      try {
+        const response = await fetch(`${API}/api/settings`);
+
+        if (!response.ok) {
+          throw new Error("Server pengaturan tidak merespons.");
+        }
+
+        const data = await response.json();
+
+        const rate = Number(data.rate_idr);
+        const min = Number(data.min_usd);
+        const max = Number(data.max_usd);
 
         if (
-          !Number.isFinite(Number(data.rate_idr)) ||
-          !Number.isFinite(Number(data.min_usd)) ||
-          !Number.isFinite(Number(data.max_usd))
-        ) throw new Error("Data pengaturan tidak valid.");
+          !Number.isFinite(rate) || rate <= 0 ||
+          !Number.isFinite(min) || min <= 0 ||
+          !Number.isFinite(max) || max < min
+        ) {
+          throw new Error("Data pengaturan tidak valid.");
+        }
 
         settings = {
-          rate: Number(data.rate_idr),
-          min: Number(data.min_usd),
-          max: Number(data.max_usd)
+          rate,
+          min,
+          max,
+          paymentEnabled: data.payment_enabled === true
         };
 
-        usdInput.min = settings.min;
-        usdInput.max = settings.max;
-        button.disabled = false;
+        usdInput.min = min;
+        usdInput.max = max;
 
         rateInfo.textContent =
-          `Kurs: ${rupiah(settings.rate)} per USD`;
+          `Kurs: ${rupiah(rate)} per USD`;
+
+        if (!settings.paymentEnabled) {
+          showMessage("Pembayaran sedang dinonaktifkan.", "error");
+        } else {
+          button.disabled = false;
+          showMessage("Server Sandbox berhasil terhubung.", "success");
+        }
 
         updateEstimate();
+
       } catch (error) {
-        rateInfo.textContent = "Kurs belum dapat dimuat.";
-        message.textContent =
-          "Layanan sedang dalam persiapan. Silakan coba kembali nanti.";
+        settings = null;
+        idrOutput.textContent = "Kurs tidak tersedia";
+        rateInfo.textContent = "Gagal menghubungkan server.";
+        showMessage(error.message, "error");
       }
     }
 
     function updateEstimate() {
       if (!settings) return;
 
-      const usd = Number(usdInput.value);
+      const value = Number(usdInput.value);
 
-      if (!usdInput.value || !Number.isFinite(usd)) {
+      if (!usdInput.value || !Number.isFinite(value)) {
         idrOutput.textContent = rupiah(0);
         return;
       }
 
-      if (usd < settings.min || usd > settings.max) {
+      if (value < settings.min || value > settings.max) {
         idrOutput.textContent = "Nominal di luar batas";
         return;
       }
 
-      idrOutput.textContent = rupiah(usd * settings.rate);
+      idrOutput.textContent = rupiah(value * settings.rate);
     }
 
     usdInput.addEventListener("input", updateEstimate);
 
     method.addEventListener("change", () => {
       const banks = [
-        "BCA", "BRI", "BNI", "Mandiri", "BSI",
-        "SeaBank", "Bank Jago", "Bank lainnya"
+        "BCA",
+        "BRI",
+        "BNI",
+        "Mandiri",
+        "BSI",
+        "SeaBank",
+        "Bank Jago",
+        "Other bank"
       ];
 
       const wallets = [
-        "DANA", "GoPay", "OVO", "ShopeePay", "LinkAja"
+        "DANA",
+        "GoPay",
+        "OVO",
+        "ShopeePay",
+        "LinkAja"
       ];
 
-      const options = method.value === "bank" ? banks :
+      const options =
+        method.value === "bank" ? banks :
         method.value === "ewallet" ? wallets : [];
 
-      provider.innerHTML =
-        '<option value="">Pilih tujuan pencairan</option>';
+      provider.replaceChildren();
+
+      const first = document.createElement("option");
+      first.value = "";
+      first.textContent = "Pilih tujuan pencairan";
+      provider.appendChild(first);
 
       options.forEach(item => {
         const option = document.createElement("option");
@@ -255,11 +395,125 @@
       });
     });
 
-    document.getElementById("orderForm").addEventListener("submit", event => {
+    form.addEventListener("submit", async event => {
       event.preventDefault();
 
-      message.textContent =
-        "Integrasi pembayaran belum diaktifkan. Jangan melakukan pembayaran dahulu.";
+      if (submitting) return;
+
+      if (!settings || !settings.paymentEnabled) {
+        showMessage(
+          "Layanan pembayaran belum siap.",
+          "error"
+        );
+        return;
+      }
+
+      const amount = Number(usdInput.value);
+
+      if (
+        !Number.isFinite(amount) ||
+        amount < settings.min ||
+        amount > settings.max
+      ) {
+        showMessage(
+          `Nominal harus antara $${settings.min} dan $${settings.max}.`,
+          "error"
+        );
+        return;
+      }
+
+      const payload = {
+        amount,
+        name: document.getElementById("name").value.trim(),
+        email: document.getElementById("email").value.trim(),
+        whatsapp: document.getElementById("whatsapp").value.trim(),
+        method: method.value,
+        provider: provider.value,
+        accountName: document.getElementById("accountName").value.trim(),
+        accountNumber: document.getElementById("accountNumber").value.trim()
+      };
+
+      submitting = true;
+      button.disabled = true;
+      button.textContent = "Memproses pesanan...";
+      showMessage("Menghubungkan ke PayPal Sandbox...");
+
+      try {
+        const response = await fetch(`${API}/api/orders`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+          throw new Error(
+            result.error ||
+            result.message ||
+            "Pembuatan pesanan gagal."
+          );
+        }
+
+        // Cari approval URL dari respons API.
+        let approvalUrl =
+          result.approval_url ||
+          result.approvalUrl ||
+          result.approve_url ||
+          result.approveUrl ||
+          result.links?.find(
+            link => link.rel === "approve"
+          )?.href;
+
+        if (!approvalUrl && result.data) {
+          const nested = result.data;
+
+          approvalUrl =
+            nested.approval_url ||
+            nested.approvalUrl ||
+            nested.approve_url ||
+            nested.links?.find(
+              link => link.rel === "approve"
+            )?.href;
+        }
+
+        if (!approvalUrl) {
+          throw new Error(
+            "Order dibuat tetapi approval URL tidak ditemukan. Periksa respons API sebelum melanjutkan."
+          );
+        }
+
+        const url = new URL(approvalUrl);
+
+        if (
+          url.protocol !== "https:" ||
+          !(
+            url.hostname === "paypal.com" ||
+            url.hostname.endsWith(".paypal.com")
+          )
+        ) {
+          throw new Error("Alamat pembayaran PayPal tidak valid.");
+        }
+
+        showMessage(
+          "Order berhasil dibuat. Mengalihkan ke PayPal Sandbox...",
+          "success"
+        );
+
+        window.location.assign(url.href);
+
+      } catch (error) {
+        showMessage(
+          error.message || "Terjadi kesalahan saat membuat order.",
+          "error"
+        );
+
+        submitting = false;
+        button.disabled = false;
+        button.textContent = "Lanjut ke pembayaran";
+      }
     });
 
     loadSettings();
