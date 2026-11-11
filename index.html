@@ -6,8 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#101827">
   <title>PayPulsa — PayPal ke Rupiah</title>
+
   <style>
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -89,12 +92,13 @@
     }
 
     .estimate small {
+      display: block;
       color: #aab8ca;
     }
 
     .estimate strong {
       display: block;
-      margin-top: 9px;
+      margin: 9px 0;
       font-size: 25px;
       color: #4ade80;
       overflow-wrap: anywhere;
@@ -134,12 +138,22 @@
       overflow-wrap: anywhere;
     }
 
-    .success { color: #4ade80; }
-    .error { color: #f87171; }
+    .success {
+      color: #4ade80;
+    }
+
+    .error {
+      color: #f87171;
+    }
 
     @media(max-width: 380px) {
-      .container { padding: 18px; }
-      .estimate strong { font-size: 21px; }
+      .container {
+        padding: 18px;
+      }
+
+      .estimate strong {
+        font-size: 21px;
+      }
     }
   </style>
 </head>
@@ -255,7 +269,6 @@
   </main>
 
   <script>
-    // WAJIB menggunakan Worker SANDBOX
     const API =
       "https://paypulsa-api-sandbox.shanowellexcel.workers.dev";
 
@@ -290,7 +303,9 @@
         const response = await fetch(`${API}/api/settings`);
 
         if (!response.ok) {
-          throw new Error("Server pengaturan tidak merespons.");
+          throw new Error(
+            `Server pengaturan merespons HTTP ${response.status}.`
+          );
         }
 
         const data = await response.json();
@@ -320,20 +335,32 @@
         rateInfo.textContent =
           `Kurs: ${rupiah(rate)} per USD`;
 
+        updateEstimate();
+
         if (!settings.paymentEnabled) {
-          showMessage("Pembayaran sedang dinonaktifkan.", "error");
-        } else {
-          button.disabled = false;
-          showMessage("Server Sandbox berhasil terhubung.", "success");
+          showMessage(
+            "Pembayaran sedang dinonaktifkan.",
+            "error"
+          );
+          return;
         }
 
-        updateEstimate();
+        button.disabled = false;
+
+        showMessage(
+          "Server Sandbox berhasil terhubung.",
+          "success"
+        );
 
       } catch (error) {
         settings = null;
         idrOutput.textContent = "Kurs tidak tersedia";
         rateInfo.textContent = "Gagal menghubungkan server.";
-        showMessage(error.message, "error");
+
+        showMessage(
+          error.message || "Gagal memuat pengaturan.",
+          "error"
+        );
       }
     }
 
@@ -352,7 +379,8 @@
         return;
       }
 
-      idrOutput.textContent = rupiah(value * settings.rate);
+      idrOutput.textContent =
+        rupiah(value * settings.rate);
     }
 
     usdInput.addEventListener("input", updateEstimate);
@@ -386,12 +414,14 @@
       const first = document.createElement("option");
       first.value = "";
       first.textContent = "Pilih tujuan pencairan";
+
       provider.appendChild(first);
 
       options.forEach(item => {
         const option = document.createElement("option");
         option.value = item;
         option.textContent = item;
+
         provider.appendChild(option);
       });
     });
@@ -437,6 +467,7 @@
       submitting = true;
       button.disabled = true;
       button.textContent = "Memproses pesanan...";
+
       showMessage("Menghubungkan ke PayPal Sandbox...");
 
       try {
@@ -454,7 +485,7 @@
           throw new Error(
             result.error ||
             result.message ||
-            "Pembuatan pesanan gagal."
+            `Pembuatan pesanan gagal (HTTP ${response.status}).`
           );
         }
 
@@ -481,7 +512,7 @@
 
         if (!approvalUrl) {
           throw new Error(
-            "Order dibuat tetapi approval URL tidak ditemukan. Periksa respons API sebelum melanjutkan."
+            "Order dibuat tetapi approval URL tidak ditemukan. Respons API perlu diperiksa."
           );
         }
 
@@ -494,7 +525,9 @@
             url.hostname.endsWith(".paypal.com")
           )
         ) {
-          throw new Error("Alamat pembayaran PayPal tidak valid.");
+          throw new Error(
+            "Alamat pembayaran PayPal tidak valid."
+          );
         }
 
         showMessage(
@@ -506,7 +539,8 @@
 
       } catch (error) {
         showMessage(
-          error.message || "Terjadi kesalahan saat membuat order.",
+          error.message ||
+          "Terjadi kesalahan saat membuat order.",
           "error"
         );
 
