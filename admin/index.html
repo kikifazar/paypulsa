@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101827">
+<title>PayPulsa Admin — Sandbox</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1220;--panel:#121d30;--line:#26364e;--muted:#9aabc2;--text:#f4f7fb;--accent:#38bdf8}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px Arial,sans-serif}
+.wrap{max-width:1100px;margin:auto;padding:24px 16px 50px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:24px}
+h1{font-size:22px;margin:0}.sub{color:var(--muted);font-size:13px;margin-top:6px}
+.tag{border:1px solid #854d0e;color:#fcd34d;background:#422006;padding:7px 10px;border-radius:20px;font-size:11px;font-weight:bold;letter-spacing:.06em}
+.notice{border:1px solid #854d0e;background:#2b1d0b;color:#fde68a;padding:13px 15px;border-radius:12px;line-height:1.5;margin-bottom:20px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:18px 0}
+.card,.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:17px}
+.metric{font-size:12px;color:var(--muted)}.value{font-size:25px;font-weight:bold;margin-top:9px}
+.panel{margin-top:16px}.panel h2{font-size:16px;margin:0 0 14px}
+.login{max-width:420px;margin:35px auto}.field{display:block;width:100%;padding:13px;margin:8px 0 14px;border:1px solid var(--line);border-radius:9px;background:#0b1424;color:var(--text)}
+button{border:0;border-radius:9px;padding:12px 16px;font-weight:bold;background:#334155;color:#cbd5e1;cursor:not-allowed}
+table{width:100%;border-collapse:collapse;min-width:650px}th,td{text-align:left;padding:13px 10px;border-bottom:1px solid var(--line);font-size:13px}th{color:var(--muted);font-weight:600}
+.tablewrap{overflow-x:auto}.empty{text-align:center;color:var(--muted);padding:24px}
+small{color:var(--muted);line-height:1.6;display:block;margin-top:12px}
+@media(max-width:700px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.value{font-size:21px}.wrap{padding:18px 12px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="top"><div><h1>PayPulsa Admin</h1><div class="sub">Panel pengelolaan transaksi dan payout</div></div><span class="tag">SANDBOX TESTING</span></header>
+<div class="notice"><strong>Mode tampilan awal.</strong> Halaman ini belum terhubung ke API atau database. Jangan gunakan untuk menandai payout sungguhan. Fitur login, pemuatan transaksi, dan konfirmasi payout akan diaktifkan setelah backend admin diamankan.</div>
+<section class="panel login">
+<h2>Login Admin</h2>
+<label for="admin-user">Email / ID Admin</label><input id="admin-user" class="field" type="text" autocomplete="username" placeholder="ID admin">
+<label for="admin-pass">Password</label><input id="admin-pass" class="field" type="password" autocomplete="current-password" placeholder="Password admin">
+<button type="button" disabled>Masuk — belum aktif</button>
+<small>Form ini hanya rancangan antarmuka. Jangan masukkan atau kirim password di halaman ini.</small>
+</section>
+<section class="grid" aria-label="Ringkasan transaksi">
+<div class="card"><div class="metric">Total transaksi</div><div class="value">—</div></div>
+<div class="card"><div class="metric">Menunggu payout</div><div class="value">—</div></div>
+<div class="card"><div class="metric">Payout sukses</div><div class="value">—</div></div>
+<div class="card"><div class="metric">Total nominal payout</div><div class="value">—</div></div>
+</section>
+<section class="panel"><h2>Transaksi menunggu payout</h2><div class="tablewrap"><table><thead><tr><th>ID Pesanan</th><th>Pelanggan</th><th>Nominal</th><th>Tujuan payout</th><th>Status pembayaran</th><th>Aksi</th></tr></thead><tbody><tr><td colspan="6" class="empty">Data transaksi belum dimuat — API belum terhubung.</td></tr></tbody></table></div></section>
+<section class="panel"><h2>Riwayat payout</h2><div class="empty">Riwayat akan tampil setelah backend admin diintegrasikan.</div></section>
+</main>
+</body>
+</html>
