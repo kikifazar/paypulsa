@@ -158,6 +158,239 @@
   </main>
 
   <script>
+    const API = "https://paypulsa-api-sandbox.shanowellexcel.workers.dev";
+
+    let settings = null;
+
+    const usdInput = document.getElementById("usd");
+    const idrOutput = document.getElementById("idr");
+    const rateInfo = document.getElementById("rateInfo");
+    const method = document.getElementById("method");
+    const provider = document.getElementById("provider");
+    const button = document.getElementById("submitButton");
+    const message = document.getElementById("message");
+
+    const rupiah = value =>
+      new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        maximumFractionDigits: 0
+      }).format(value);
+
+    async function loadSettings() {
+      try {
+        const res = await fetch(`${API}/api/settings`);
+        if (!res.ok) throw new Error("Pengaturan belum tersedia.");
+
+        const data = await res.json();
+
+        if (
+          !Number.isFinite(Number(data.rate_idr)) ||
+          !Number.isFinite(Number(data.min_usd)) ||
+          !Number.isFinite(Number(data.max_usd))
+        ) throw new Error("Data pengaturan tidak valid.");
+
+        settings = {
+          rate: Number(data.rate_idr),
+          min: Number(data.min_usd),
+          max: Number(data.max_usd)
+        };
+
+        usdInput.min = settings.min;
+        usdInput.max = settings.max;
+        button.disabled = false;
+
+        rateInfo.textContent =
+          `Kurs: ${rupiah(settings.rate)} per USD`;
+
+        updateEstimate();
+      } catch (error) {
+        rateInfo.textContent = "Kurs belum dapat dimuat.";
+        message.textContent =
+          "Layanan sedang dalam persiapan. Silakan coba kembali nanti.";
+      }
+    }
+
+    function updateEstimate() {
+      if (!settings) return;
+
+      const usd = Number(usdInput.value);
+
+      if (!usdInput.value || !Number.isFinite(usd)) {
+        idrOutput.textContent = rupiah(0);
+        return;
+      }
+
+      if (usd < settings.min || usd > settings.max) {
+        idrOutput.textContent = "Nominal di luar batas";
+        return;
+      }
+
+      idrOutput.textContent = rupiah(usd * settings.rate);
+    }
+
+    usdInput.addEventListener("input", updateEstimate);
+
+    method.addEventListener("change", () => {
+      const banks = [
+        "BCA", "BRI", "BNI", "Mandiri", "BSI",
+        "SeaBank", "Bank Jago", "Bank lainnya"
+      ];
+
+      const wallets = [
+        "DANA", "GoPay", "OVO", "ShopeePay", "LinkAja"
+      ];
+
+      const options = method.value === "bank" ? banks :
+        method.value === "ewallet" ? wallets : [];
+
+      provider.innerHTML =
+        '<option value="">Pilih tujuan pencairan</option>';
+
+      options.forEach(item => {
+        const option = document.createElement("option");
+        option.value = item;
+        option.textContent = item;
+        provider.appendChild(option);
+      });
+    });
+
+    document.getElementById("orderForm").addEventListener("submit", event => {
+      event.preventDefault();
+
+      message.textContent =
+        "Integrasi pembayaran belum diaktifkan. Jangan melakukan pembayaran dahulu.";
+    });
+
+    loadSettings();
+  </script>
+</body>
+</html>
+
+    }
+    h3 { margin-top: 25px; font-size: 16px; }
+    label {
+      display: block;
+      margin: 15px 0 7px;
+      font-size: 13px;
+      color: #d5deea;
+    }
+    input, select {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #475569;
+      border-radius: 9px;
+      background: #101827;
+      color: white;
+      font-size: 15px;
+      outline: none;
+    }
+    input:focus, select:focus { border-color: #60a5fa; }
+    .estimate {
+      margin-top: 18px;
+      padding: 18px;
+      background: #101827;
+      border-radius: 12px;
+      text-align: center;
+    }
+    .estimate small { color: #aab8ca; }
+    .estimate strong {
+      display: block;
+      margin-top: 9px;
+      font-size: 25px;
+      color: #4ade80;
+    }
+    button {
+      width: 100%;
+      margin-top: 23px;
+      padding: 15px;
+      border: 0;
+      border-radius: 10px;
+      background: #2563eb;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:disabled { opacity: .55; cursor: not-allowed; }
+    .notice {
+      margin-top: 15px;
+      color: #aab8ca;
+      font-size: 12px;
+      line-height: 1.6;
+      text-align: center;
+    }
+    #message {
+      margin-top: 15px;
+      font-size: 13px;
+      line-height: 1.5;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <div class="logo">PayPulsa</div>
+    <div class="subtitle">Layanan pembayaran PayPal ke Rupiah</div>
+
+    <form id="orderForm">
+      <h3>Informasi pelanggan</h3>
+
+      <label for="name">Nama lengkap</label>
+      <input id="name" name="name" autocomplete="name" required>
+
+      <label for="email">Email aktif</label>
+      <input id="email" name="email" type="email" autocomplete="email" required>
+
+      <label for="whatsapp">Nomor WhatsApp</label>
+      <input id="whatsapp" name="whatsapp" type="tel" autocomplete="tel" required>
+
+      <h3>Jumlah penukaran</h3>
+
+      <label for="usd">Nominal USD</label>
+      <input id="usd" name="usd" type="number" min="1" max="500"
+        step="0.01" placeholder="Contoh: 20.00" required>
+
+      <div class="estimate">
+        <small>Estimasi rupiah yang diterima</small>
+        <strong id="idr">Memuat kurs...</strong>
+        <small id="rateInfo">Menghubungkan ke server PayPulsa</small>
+      </div>
+
+      <h3>Tujuan pencairan</h3>
+
+      <label for="method">Metode pencairan</label>
+      <select id="method" name="method" required>
+        <option value="">Pilih metode</option>
+        <option value="bank">Transfer bank</option>
+        <option value="ewallet">E-wallet</option>
+      </select>
+
+      <label for="provider">Bank / E-wallet</label>
+      <select id="provider" name="provider" required>
+        <option value="">Pilih metode terlebih dahulu</option>
+      </select>
+
+      <label for="accountName">Nama pemilik rekening</label>
+      <input id="accountName" name="accountName" required>
+
+      <label for="accountNumber">Nomor rekening / nomor e-wallet</label>
+      <input id="accountNumber" name="accountNumber" required>
+
+      <button id="submitButton" type="submit" disabled>
+        Lanjut ke pembayaran
+      </button>
+
+      <div id="message" role="status"></div>
+    </form>
+
+    <div class="notice">
+      Estimasi mengikuti kurs PayPulsa yang berlaku.
+      Pesanan akan diverifikasi sebelum pencairan.
+    </div>
+  </main>
+
+  <script>
     const API = "https://paypulsa-api.shanowellexcel.workers.dev";
 
     let settings = null;
